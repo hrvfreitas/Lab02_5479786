@@ -1,0 +1,57 @@
+version: 2
+
+sources:
+  - name: silver
+    description: >
+      Camada Silver do pipeline PNCP — dados tratados e tipados,
+      carregados dos Parquets via silver_to_postgres.py.
+    schema: silver
+    tables:
+      - name: contratos
+        description: >
+          Contratos públicos do PNCP após limpeza, desaninhamento de objetos
+          da API e filtro de sanidade (valor_global <= R$ 10 bilhões).
+          Período: Jan/2021 – Abril/2026. ~3,9 milhões de registros.
+        columns:
+          - name: id
+            description: Identificador único do contrato no PNCP (numeroControlePNCP)
+            tests:
+              - not_null
+              - unique
+
+          - name: orgao_entidade_id
+            description: CNPJ do órgão contratante (14 dígitos)
+            tests:
+              - not_null
+
+          - name: orgao_entidade_nome
+            description: Razão social do órgão contratante
+            tests:
+              - not_null
+
+          - name: valor_global
+            description: Valor total do contrato em R$
+            tests:
+              - not_null
+
+          - name: modalidade_id
+            description: ID do tipo de contrato (FK para dim_modalidades)
+            tests:
+              - not_null
+
+          - name: modalidade_nome
+            description: Nome do tipo/modalidade de contrato
+
+          - name: data_assinatura
+            description: Data de assinatura do contrato
+
+          - name: data_publicacao
+            description: Data de publicação no portal PNCP
+
+          - name: cnpj_contratada
+            description: CNPJ do fornecedor (nulo para pessoas físicas)
+
+          - name: ano_mes_coleta
+            description: Mês de referência da coleta no formato AAAAMM
+            tests:
+              - not_null

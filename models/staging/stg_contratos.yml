@@ -1,0 +1,36 @@
+models:
+  - name: stg_contratos
+    description: >
+      View de staging com contratos públicos do PNCP limpos e padronizados.
+      Fonte: silver.contratos. Filtro: valor_global > 0 e id não nulo.
+    columns:
+      - name: contrato_id
+        description: Identificador único do contrato no PNCP
+        tests:
+          - not_null
+          - unique
+
+      - name: orgao_cnpj
+        description: CNPJ do órgão contratante (14 dígitos)
+        tests:
+          - not_null
+
+      - name: orgao_nome
+        description: Razão social do órgão contratante
+        tests:
+          - not_null
+
+      - name: valor_global
+        description: Valor total do contrato em R$ (sempre positivo após filtro)
+        tests:
+          - not_null
+
+      - name: modalidade_id
+        description: ID da modalidade de contrato
+        tests:
+          - not_null
+
+      - name: ano_mes_coleta
+        description: Mês de referência no formato AAAAMM
+        tests:
+          - not_null

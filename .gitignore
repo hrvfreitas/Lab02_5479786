@@ -1,0 +1,17 @@
+gitignore << 'EOF'
+# Ambiente virtual
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Dados grandes
+data/raw/
+data/silver/
+
+# Logs
+*.log
+logs/
+
+# Outros
+.DS_Store

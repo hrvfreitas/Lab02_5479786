@@ -1,0 +1,93 @@
+version: 2
+
+models:
+  # ---------------------------------------------------------------------------
+  - name: fct_contratos
+    description: >
+      Tabela fato central do Star Schema Gold gerado pelo DBT.
+    columns:
+      - name: id_contrato
+        tests:
+          - not_null
+          - unique
+
+      - name: id_contrato_pncp
+        tests:
+          - not_null
+          - unique
+
+      - name: orgao_entidade_id
+        description: FK para dim_orgaos (CNPJ do órgão)
+        tests:
+          - not_null
+          - relationships:
+              arguments: 
+                to: ref('dim_orgaos')
+                field: orgao_entidade_id
+
+      - name: id_modalidade
+        description: FK para dim_modalidades
+        tests:
+          - not_null
+          - relationships:
+              arguments: 
+                to: ref('dim_modalidades')
+                field: id_modalidade
+
+      - name: valor_global
+        tests:
+          - not_null
+
+      - name: contrato_ativo
+        tests:
+          - not_null
+          - accepted_values:
+              values: [true, false]
+
+      - name: ano_mes_coleta
+        tests:
+          - not_null
+
+
+  # ---------------------------------------------------------------------------
+  - name: dim_orgaos
+    description: Dimensão com os órgãos públicos contratantes.
+    columns:
+      - name: orgao_entidade_id
+        description: CNPJ do órgão (PK da dimensão)
+        tests:
+          - not_null
+          - unique
+
+      - name: nome_orgao
+        description: Razão social do órgão
+        tests:
+          - not_null
+
+  # ---------------------------------------------------------------------------
+  - name: dim_fornecedores
+    description: Dimensão com os fornecedores contratados (apenas PJ com CNPJ).
+    columns:
+      - name: cnpj_contratada
+        description: CNPJ do fornecedor (PK da dimensão)
+        tests:
+          - not_null
+          - unique
+
+      - name: nome_contratada
+        description: Nome/razão social do fornecedor
+
+  # ---------------------------------------------------------------------------
+  - name: dim_modalidades
+    description: Dimensão com os tipos/modalidades de contrato.
+    columns:
+      - name: id_modalidade
+        description: ID da modalidade (PK da dimensão)
+        tests:
+          - not_null
+          - unique
+
+      - name: nome_modalidade
+        description: Nome da modalidade de contrato
+        tests:
+          - not_null

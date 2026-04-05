@@ -1,0 +1,21 @@
+FROM python:3.12-slim
+
+WORKDIR /app
+
+# Dependências do sistema
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+       git curl bash \
+    && rm -rf /var/lib/apt/lists/*
+
+# Dependências Python (DBT + pipeline)
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copia todo o projeto Lab02 para o container
+# (o volume em docker-compose.yml sobrescreve isso em dev,
+#  mas o COPY garante funcionamento sem volume em CI/CD)
+COPY . .
+
+# Verifica instalação
+RUN dbt --version

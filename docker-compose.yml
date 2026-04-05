@@ -1,0 +1,158 @@
+version: "3.9"
+
+services:
+
+  # ===========================================================================
+  # MODEL — PostgreSQL 18
+  # ===========================================================================
+  postgres:
+    image: postgres:18-alpine
+    container_name: pncp_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB:       pncp_db
+      POSTGRES_USER:     postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pncp_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d   # scripts SQL rodados na 1ª inicialização
+    command: >
+      postgres
+        -c shared_buffers=3GB
+        -c effective_cache_size=10GB
+        -c work_mem=64MB
+        -c maintenance_work_mem=512MB
+        -c max_connections=50
+        -c checkpoint_completion_target=0.9
+        -c wal_buffers=64MB
+        -c random_page_cost=1.1
+        -c effective_io_concurrency=200
+        -c max_worker_processes=6
+        -c max_parallel_workers_per_gather=3
+        -c max_parallel_workers=6
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d pncp_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - pncp_net
+
+  # ===========================================================================
+  # DBT — Transformação Silver → Gold
+  #
+  # Container de tarefa: executa e encerra (não fica "up" permanentemente).
+  # Aguarda o postgres estar healthy antes de rodar.
+  #
+  # Comandos disponíveis via docker compose run:
+  #   docker compose run --rm dbt run
+  #   docker compose run --rm dbt test
+  #   docker compose run --rm dbt docs generate
+  # ===========================================================================
+  dbt:
+    build:
+      context: .           # Dockerfile na raiz do Lab02
+      dockerfile: Dockerfile.dbt
+    container_name: pncp_dbt
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DBT_PROFILES_DIR: /app          # profiles.yml está em /app dentro do container
+      DBT_PROJECT_DIR:  /app
+      # Variáveis de conexão (espelham o profiles.yml)
+      POSTGRES_HOST:    pncp_postgres
+      POSTGRES_PORT:    "5432"
+      POSTGRES_DB:      pncp_db
+      POSTGRES_USER:    postgres
+      POSTGRES_PASS:    postgres
+    volumes:
+      - .:/app                        # monta todo o projeto Lab02 em /app
+      - dbt_target:/app/target        # preserva artefatos compilados entre runs
+    # Comando padrão ao rodar "docker compose up dbt":
+    # carrega o Silver no Postgres e em seguida executa dbt run + dbt test
+    command: >
+      bash -c "
+        echo '=== Carregando Silver → postgres.silver ===' &&
+        python silver_to_postgres.py &&
+        echo '=== dbt run ===' &&
+        dbt run &&
+        echo '=== dbt test ===' &&
+        dbt test &&
+        echo '=== dbt docs generate ===' &&
+        dbt docs generate &&
+        echo '✅ Pipeline DBT concluído!'
+      "
+    networks:
+      - pncp_net
+
+  # ===========================================================================
+  # DBT DOCS — Servidor de documentação (opcional)
+  #
+  # Sobe o servidor de docs gerado pelo dbt docs generate.
+  # Acesse: http://localhost:8080
+  #
+  # Uso: docker compose up dbt-docs
+  # (execute apenas após: docker compose run --rm dbt dbt docs generate)
+  # ===========================================================================
+  dbt-docs:
+    build:
+      context: .
+      dockerfile: Dockerfile.dbt
+    container_name: pncp_dbt_docs
+    depends_on:
+      - postgres
+    environment:
+      DBT_PROFILES_DIR: /app
+      DBT_PROJECT_DIR:  /app
+    volumes:
+      - .:/app
+      - dbt_target:/app/target
+    ports:
+      - "8080:8080"
+    command: dbt docs serve --host 0.0.0.0 --port 8080
+    networks:
+      - pncp_net
+
+  # ===========================================================================
+  # VIEW — Metabase (conecta direto no schema gold do PostgreSQL)
+  # ===========================================================================
+  metabase:
+    image: metabase/metabase:latest
+    container_name: pncp_metabase
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "3000:3000"
+    environment:
+      MB_DB_TYPE:    postgres
+      MB_DB_DBNAME:  metabase_meta
+      MB_DB_PORT:    5432
+      MB_DB_USER:    postgres
+      MB_DB_PASS:    postgres
+      MB_DB_HOST:    pncp_postgres
+      JAVA_TIMEZONE: America/Sao_Paulo
+    volumes:
+      - metabase_data:/metabase-data
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/api/health"]
+      interval: 30s
+      timeout: 15s
+      retries: 10
+      start_period: 120s
+    networks:
+      - pncp_net
+
+# =============================================================================
+volumes:
+  pncp_data:
+  metabase_data:
+  dbt_target:       # artefatos compilados do DBT (target/)
+
+networks:
+  pncp_net:
+    driver: bridge
