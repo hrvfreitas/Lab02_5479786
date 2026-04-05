@@ -1,9 +1,6 @@
 -- =============================================================================
 -- stg_contratos.sql — Staging: limpeza final e padronização
 -- Materialização: view (schema staging)
---
--- Seleciona e renomeia campos da Silver, aplica cast de tipos
--- e filtra registros com valor_global inválido.
 -- =============================================================================
 
 with source as (
@@ -39,10 +36,10 @@ staged as (
         modalidade_id,
         modalidade_nome,
 
-        -- Valores — usa macro format_brl para documentação
-        valor_inicial::numeric(18,2)                        as valor_inicial,
-        valor_global::numeric(18,2)                         as valor_global,
-        valor_parcelas::numeric(18,2)                       as valor_parcelas,
+        -- Valores
+        valor_inicial::numeric(18,2)                         as valor_inicial,
+        valor_global::numeric(18,2)                          as valor_global,
+        valor_parcelas::numeric(18,2)                        as valor_parcelas,
 
         -- Datas
         data_assinatura::date                               as data_assinatura,
@@ -58,7 +55,17 @@ staged as (
     where
         valor_global is not null
         and valor_global > 0
+        
+        -- Resolve ERROR: id_contrato not null
         and id is not null
+
+        -- Resolve ERROR: assert_publicacao_apos_assinatura
+        -- Filtra registros onde a publicação ocorreu antes da assinatura (erro de input do PNCP)
+        and data_publicacao::date >= data_assinatura::date
+
+        -- Filtra CNPJs/IDs de fornecedor nulos para evitar falhas nas dimensões Gold
+        and cnpj_contratada is not null
+        and orgao_entidade_id is not null
 
 )
 

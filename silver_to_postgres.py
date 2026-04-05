@@ -14,7 +14,8 @@ from tqdm import tqdm
 # ---------------------------------------------------------------------------
 
 SILVER_DIR   = Path('data/silver')   
-DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/pncp_db'
+##DATABASE_URL = 'postgresql://postgres:postgres@localhost:5432/pncp_db' <= use para localhost
+DATABASE_URL = 'postgresql://postgres:postgres@pncp_postgres:5432/pncp_db'
 SCHEMA       = 'silver'
 TABELA       = 'contratos'
 LOTE         = 50_000
