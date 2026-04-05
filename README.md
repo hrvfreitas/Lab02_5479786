@@ -361,7 +361,7 @@ Responsabilidades:
 
 | Model | Materialização | Registros aprox. | Descrição |
 |---|---|---|---|
-| `fct_contratos` | table | ~3,65M | Tabela fato central |
+| `fct_contratos` | table | ~3,9M | Tabela fato central |
 | `dim_orgaos` | table | ~13K | Órgãos contratantes distintos |
 | `dim_fornecedores` | table | ~370K | Fornecedores PJ com CNPJ |
 | `dim_modalidades` | table | ~12 | Tipos de contrato |
