@@ -485,14 +485,14 @@ Senha:   postgres
 SELECT
     EXTRACT(YEAR FROM f.data_assinatura)           AS ano,
     COALESCE(m.nome_modalidade, 'Não informado')   AS modalidade,
-    ROUND(SUM(f.valor_global) / 1e9, 2)           AS valor_bilhoes,
-    COUNT(*)                                        AS qtd_contratos
-FROM gold.fct_contratos f
-LEFT JOIN gold.dim_modalidades m ON f.id_modalidade = m.id_modalidade
+    ROUND(SUM(f.valor_global) / 1e9, 2)            AS valor_bilhoes,
+    COUNT(*)                                       AS qtd_contratos
+FROM "gold_gold".fct_contratos f
+LEFT JOIN "gold_gold".dim_modalidades m ON f.id_modalidade = m.id_modalidade
 WHERE f.data_assinatura IS NOT NULL
   AND EXTRACT(YEAR FROM f.data_assinatura) BETWEEN 2021 AND 2026
-GROUP BY ano, modalidade
-ORDER BY ano, valor_bilhoes DESC
+GROUP BY 1, 2
+ORDER BY 1 ASC, 3 DESC;
 ```
 
 **Visualização 2 — Top 10 Órgãos por Volume Financeiro (barras horizontais)**
