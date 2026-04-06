@@ -503,12 +503,12 @@ SELECT
     ROUND(SUM(f.valor_global) / 1e9, 2)  AS valor_bilhoes,
     COUNT(*)                               AS qtd_contratos,
     ROUND(AVG(f.valor_global), 2)         AS ticket_medio
-FROM gold.fct_contratos f
-JOIN gold.dim_orgaos o ON f.orgao_entidade_id = o.orgao_entidade_id
+FROM "gold_gold".fct_contratos f
+JOIN "gold_gold".dim_orgaos o ON f.orgao_entidade_id = o.orgao_entidade_id
 WHERE f.valor_global > 0
 GROUP BY o.nome_orgao
 ORDER BY valor_bilhoes DESC
-LIMIT 10
+LIMIT 10;
 ```
 
 **Visualização 3 — Delay de Publicação por Ano (linha)**
