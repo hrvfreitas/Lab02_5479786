@@ -165,17 +165,6 @@ O arquivo `init-db/01_create_databases.sql` é executado pelo PostgreSQL na **pr
 
 > **Atenção:** se o volume `pncp_data` já existir de uma execução anterior, o script é ignorado. Para recriar tudo do zero: `docker compose down -v && docker compose up -d`
 
-### `profiles.yml` — compatível com Docker e local
-
-O arquivo lê variáveis de ambiente com fallback para valores locais, sem precisar de edição:
-
-```yaml
-host: "{{ env_var('POSTGRES_HOST', 'localhost') }}"
-```
-
-No Docker: `POSTGRES_HOST=pncp_postgres` (injetado pelo `docker-compose.yml`).  
-Local: usa `localhost` automaticamente.
-
 ### Por que o DBT não fica "up" permanentemente?
 
 O DBT é uma ferramenta de transformação batch — executa, gera os artefatos e encerra. O padrão correto é `docker compose run --rm dbt`, exatamente como se faz em pipelines CI/CD. Manter o container rodando em loop não agrega valor.
