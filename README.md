@@ -516,16 +516,16 @@ LIMIT 10;
 ```sql
 SELECT
     EXTRACT(YEAR FROM data_assinatura)                              AS ano,
-    ROUND(AVG(delay_publicacao_dias), 1)                           AS delay_medio_dias,
+    ROUND(AVG(delay_publicacao_dias), 1)                            AS delay_medio_dias,
     MAX(delay_publicacao_dias)                                      AS delay_maximo,
-    COUNT(*) FILTER (WHERE delay_publicacao_dias > 20)             AS publicacao_tardia,
-    COUNT(*) FILTER (WHERE delay_publicacao_dias BETWEEN 0 AND 5)  AS publicacao_rapida
-FROM gold.fct_contratos
+    COUNT(*) FILTER (WHERE delay_publicacao_dias > 20)              AS publicacao_tardia,
+    COUNT(*) FILTER (WHERE delay_publicacao_dias BETWEEN 0 AND 5)   AS publicacao_rapida
+FROM "gold_gold".fct_contratos
 WHERE delay_publicacao_dias IS NOT NULL
   AND delay_publicacao_dias >= 0
   AND EXTRACT(YEAR FROM data_assinatura) BETWEEN 2021 AND 2026
-GROUP BY ano
-ORDER BY ano
+GROUP BY 1
+ORDER BY 1;
 ```
 
 ---
