@@ -1,17 +1,49 @@
-gitignore << 'EOF'
-# Ambiente virtual
+# =============================================================================
+# .gitignore — Lab02_5479786
+# =============================================================================
+
+# DBT artefatos gerados (não versionar)
+target/
+dbt_packages/
+logs/
+.user.yml
+
+# Dados (muito grandes para o GitHub)
+data/
+!data/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
 .venv/
 venv/
-__pycache__/
-*.pyc
+env/
+*.egg-info/
+dist/
+build/
 
-# Dados grandes
-data/raw/
-data/silver/
+# Ambientes virtuais
+.env
+.env.*
 
-# Logs
-*.log
-logs/
+# Jupyter
+.ipynb_checkpoints/
 
-# Outros
+# macOS
 .DS_Store
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Temporários
+temp/
+tmp/
+*.tmp
+*.log
+
+# Docker
+*.override.yml
