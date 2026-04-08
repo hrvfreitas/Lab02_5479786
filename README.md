@@ -447,15 +447,10 @@ docker compose run --rm dbt bash -c "dbt docs generate"
 # Servir em http://localhost:8080
 docker compose up dbt-docs
 ```
+![Documentacao](screen/dbt-docs.jpg)
 
-### Conteúdo da documentação
-
-- **Catalog:** descrição de todos os models, sources e colunas com tipos de dados
-- **Lineage graph:** grafo interativo de dependências entre models
-- **Testes:** status de execução por model e coluna
-- **SQL compilado:** query final gerada pelo DBT para cada model
-
-> Adicionar prints da tela de documentação e do lineage após execução local.
+### Visualização do Lineage
+![Lineage](screen/lin.png)
 
 ---
 
@@ -525,7 +520,7 @@ WHERE delay_publicacao_dias IS NOT NULL
 GROUP BY 1
 ORDER BY 1;
 ```
-
+![Dashboard Metabase](screen/visual.jpg)
 ---
 
 ## Observações Técnicas
