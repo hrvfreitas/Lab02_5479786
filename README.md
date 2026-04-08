@@ -479,7 +479,7 @@ Senha:   postgres
 
 ### Dashboards implementados (≥ 3 visualizações)
 
-**Visualização 1 — Evolução Anual por Modalidade (barras empilhadas)**
+**Visualização 1 — Evolução Anual por Modalidade **
 
 ```sql
 SELECT
@@ -495,23 +495,21 @@ GROUP BY 1, 2
 ORDER BY 1 ASC, 3 DESC;
 ```
 
-**Visualização 2 — Top 10 Órgãos por Volume Financeiro (barras horizontais)**
+**Visualização 2 — Proporçao de Dados  por Categoria/Processo**
 
 ```sql
 SELECT
-    o.nome_orgao,
-    ROUND(SUM(f.valor_global) / 1e9, 2)  AS valor_bilhoes,
-    COUNT(*)                               AS qtd_contratos,
-    ROUND(AVG(f.valor_global), 2)         AS ticket_medio
-FROM "gold_gold".fct_contratos f
-JOIN "gold_gold".dim_orgaos o ON f.orgao_entidade_id = o.orgao_entidade_id
-WHERE f.valor_global > 0
-GROUP BY o.nome_orgao
-ORDER BY valor_bilhoes DESC
-LIMIT 10;
+  "gold_gold"."fct_contratos"."categoria_processo" AS "categoria_processo",
+  COUNT(*) AS "count"
+FROM
+  "gold_gold"."fct_contratos"
+GROUP BY
+  "gold_gold"."fct_contratos"."categoria_processo"
+ORDER BY
+  "gold_gold"."fct_contratos"."categoria_processo" ASC
 ```
 
-**Visualização 3 — Delay de Publicação por Ano (linha)**
+**Visualização 3 — Delay de Publicação por Ano **
 
 ```sql
 SELECT
