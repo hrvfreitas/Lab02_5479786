@@ -53,20 +53,20 @@ data/silver/*.parquet  (Lab01_PART1_5479786)
 silver_to_postgres.py ──────────► pncp_db.silver.contratos
   (roda localmente com localhost)        │
                                          ▼
-                            ┌────────────────────────────────┐
+                            ┌─────────────────────────────────┐
                             │  DBT (container pncp_dbt)       │
-                            │                                  │
-                            │  source: silver.contratos        │
-                            │          │                       │
-                            │          ▼                       │
-                            │  stg_contratos  (view·staging)   │
-                            │          │                       │
+                            │                                 │
+                            │  source: silver.contratos       │
+                            │          │                      │
+                            │          ▼                      │
+                            │  stg_contratos  (view·staging)  │
+                            │          │                      │
                             │    ┌─────┼──────┬────────────┐  │
                             │    ▼     ▼      ▼            ▼  │
                             │  dim_  dim_   dim_      fct_    │
-                            │  orgaos forn. modal.  contratos  │
-                            │         (tables · gold)          │
-                            └────────────────────────────────┘
+                            │  orgaos forn. modal.  contratos │
+                            │         (tables · gold)         │
+                            └─────────────────────────────────┘
                                          │
                                          ▼
                               Metabase (porta 3000)
