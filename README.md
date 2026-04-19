@@ -7,7 +7,6 @@
 **Repositório Lab02:** https://github.com/hrvfreitas/Lab02_5479786  
 **Repositório Lab01:** https://github.com/hrvfreitas/Lab01_PART1_5479786  
 **Escola:** Escola Politécnica USP — PECE Big Data  
-**Professores:** Prof. Dr. Pedro L. P. Corrêa & Profa. Dra. Jeaneth Machicao
 
 ---
 
